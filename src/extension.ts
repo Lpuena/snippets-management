@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "snippets-management" is now active!')
 
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider('snippetsManagement', new MyWebviewProvider(), {
+    vscode.window.registerWebviewViewProvider('snippetsManagement', new MyWebviewProvider(context.extensionUri), {
       webviewOptions: {
         retainContextWhenHidden: true,
       },
