@@ -1,0 +1,19 @@
+.container {
+  font-size: 16px;
+  font-weight: bold;
+  justify-content: center; 
+}
+
+.file {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: #1f1f1f;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.file:hover {
+  border-color: #add8e6;
+}
