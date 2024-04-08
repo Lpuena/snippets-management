@@ -32,13 +32,4 @@ export function readFileContent(fileName: string) {
   const fileContent = fs.readFileSync(filePath, 'utf-8')
 
   return fileContent
-
-  // try {
-  //   const parsedContent = JSON.parse(fileContent)
-  //   return parsedContent
-  // }
-  // catch (error) {
-  //   console.error('Error parsing file content:', error)
-  //   return null
-  // }
 }
