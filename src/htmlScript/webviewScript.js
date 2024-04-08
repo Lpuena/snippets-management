@@ -7,6 +7,10 @@ window.addEventListener('message', (event) => {
     const newContent = message.content
     document.getElementById('fileContent').value = newContent
   }
+  if (message.command === 'updateBody') {
+    const newBody = message.content
+    document.getElementById('bodyArea').value = newBody
+  }
 })
 
 // // Input listeners for file content changes
@@ -53,5 +57,10 @@ document.getElementById('codeArea').addEventListener('input', (event) => {
 document.getElementById('convertBtn').addEventListener('click', (_event) => {
   vscode.postMessage({
     command: 'convertBtnClicked',
+  })
+})
+document.getElementById('saveBtn').addEventListener('click', (_event) => {
+  vscode.postMessage({
+    command: 'saveBtnClicked',
   })
 })

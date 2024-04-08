@@ -27,13 +27,13 @@ export function fileRegex(file: string) {
     bodyMatchFormat = formatSnippet(bodyMatch[1])
     code = formatToCode(bodyMatchFormat)
   }
+
   return {
-    scope: scopeMatch && scopeMatch[1],
-    prefix: prefixMatch && prefixMatch[1],
-    templateName: templateNameMatch && templateNameMatch[1],
+    scope: scopeMatch && scopeMatch[1] || '',
+    prefix: prefixMatch && prefixMatch[1] || '',
+    templateName: templateNameMatch && templateNameMatch[1] || '',
     body: bodyMatchFormat,
     code,
-
   }
 }
 
@@ -45,6 +45,10 @@ export function replacePrefixValue(jsonString: string, newVal: string) {
 }
 export function replaceTemplateNameValue(jsonString: string, newVal: string) {
   return jsonString.replace(templateNameRegex, `"${newVal}"$2`)
+}
+
+export function replaceBodyValue(jsonString: string, newVal: string) {
+  return jsonString.replace(bodyRegex, `"body": ${newVal},`)
 }
 
 /** 转换成对齐格式 */
