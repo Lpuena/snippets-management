@@ -40,3 +40,18 @@ document.getElementById('templateNameInput').addEventListener('input', (event) =
     templateName: event.target.value,
   })
 })
+
+// 增加code area 的监听
+document.getElementById('codeArea').addEventListener('input', (event) => {
+  vscode.postMessage({
+    command: 'codeAreaChanged',
+    codeArea: event.target.value,
+  })
+})
+
+// 增加button 按钮的监听
+document.getElementById('convertBtn').addEventListener('click', (_event) => {
+  vscode.postMessage({
+    command: 'convertBtnClicked',
+  })
+})
