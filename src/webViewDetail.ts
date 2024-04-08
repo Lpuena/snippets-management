@@ -4,14 +4,23 @@ import * as vscode from 'vscode'
 import { readFileContent } from './readFile'
 import { fileRegex } from './fileRegex'
 import { handleMessage } from './msgCmdProcessor'
+import { ReactiveData } from './reactiveData'
+
+export const SCOPE = new ReactiveData<string>('')
+export const PREFIX = new ReactiveData<string>('')
+export const TEMPLATE_NAME = new ReactiveData<string>('')
+export const BODY = new ReactiveData<string>('')
+export const CODE = new ReactiveData<string>('')
+export const FILE_CONTENT = new ReactiveData<string>('')
+FILE_CONTENT.subscribe((value) => {
+  console.log('FILE_CONTENT变化了:', value)
+})
 
 export class WebViewDetail {
   private _extensionUri: vscode.Uri
-  private fileContent: string
   constructor(fileName: string, extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri
     this.createNewWebviewPanel(fileName)
-    this.fileContent = readFileContent(fileName)
   }
 
   private createNewWebviewPanel(fileName: string) {
@@ -33,34 +42,49 @@ export class WebViewDetail {
 
       // 使用提取出来的逻辑进行处理
       const newFileContent = handleMessage(
-        this.fileContent,
+        FILE_CONTENT.value,
         message,
         (updatedContent: { command: string, content: string }) => {
           panel.webview.postMessage(updatedContent)
         },
       )
       // 更新本地文件内容
-      if (newFileContent !== this.fileContent)
-        this.fileContent = newFileContent
+      if (newFileContent !== FILE_CONTENT.value) {
+        console.log('更新的文件内容:', newFileContent)
+
+        FILE_CONTENT.value = newFileContent
+      }
     })
   }
 
   private getNewWebviewContent(fileName: string, webview: vscode.Webview) {
-    this.fileContent = readFileContent(fileName)
-    const { scope, prefix, templateName, body, code } = fileRegex(this.fileContent)
-    console.log('templateName:', templateName)
+    FILE_CONTENT.value = readFileContent(fileName)
+    const { scope, prefix, templateName, body, code } = fileRegex(FILE_CONTENT.value)
 
-    const scriptPath = webview.asWebviewUri(vscode.Uri.joinPath(
-      this._extensionUri,
-      'src',
-      'htmlScript',
-      'webviewScript.js',
-    ))
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'styles', 'detail.css'),
+    SCOPE.value = scope
+    PREFIX.value = prefix
+    TEMPLATE_NAME.value = templateName
+    BODY.value = body
+    CODE.value = code
+    console.log('SCOPE:', SCOPE.value)
+
+    const scriptPath = webview.asWebviewUri(
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'src',
+        'htmlScript',
+        'webviewScript.js',
+      ),
     )
-    console.log('styleUri:', styleUri)
-    console.log('scriptPath:', scriptPath)
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'styles',
+        'detail.css',
+      ),
+    )
+    // console.log('styleUri:', styleUri)
+    // console.log('scriptPath:', scriptPath)
 
     return `
     <!DOCTYPE html>
@@ -75,35 +99,36 @@ export class WebViewDetail {
     <body>
       <h1>File Details for ${fileName}</h1>
       <h2>Edit Scope and Prefix</h2>
+      <button id="saveBtn">Save Changes</button>
       <div>
         <div class="input-group">
           <label for="templateName">Template Name:</label>
-          <input type="text" id="templateNameInput" value="${templateName}" />
+          <input type="text" id="templateNameInput" value="${TEMPLATE_NAME.value}" />
         </div>
         
         <div class="input-group">
           <label for="scopeInput">Scope(适用于的文件类型,逗号隔开):</label>
-          <input type="text" id="scopeInput" value="${scope}" />
+          <input type="text" id="scopeInput" value="${SCOPE.value}" />
         </div>
 
         <div class="input-group">
           <label for="prefixInput">Prefix(激活代码片段的前缀):</label>
-          <input type="text" id="prefixInput" value="${prefix}" />
+          <input type="text" id="prefixInput" value="${PREFIX.value}" />
         </div>
 
         <div class="area-group">
           <label>Code(源代码):</label>
           <button id="convertBtn">转换成代码片段</button>
-          <textarea type="text" id="codeArea" >${code}</textarea>
+          <textarea type="text" id="codeArea" >${CODE.value}</textarea>
         </div>
         
         <div class="area-group">
           <label>Body(代码片段内容):</label>
-          <textarea type="text" id="bodyArea" >${body}</textarea>
+          <textarea type="text" id="bodyArea" >${BODY.value}</textarea>
         </div>
         
       </div>
-      <textarea id="fileContent" disabled>${this.fileContent}</textarea>
+      <textarea id="fileContent" disabled>${FILE_CONTENT.value}</textarea>
       <script src="${scriptPath}"></script>
     </body>
     </html>

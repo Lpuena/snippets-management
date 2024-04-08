@@ -13,9 +13,7 @@
   "engines": {
     "vscode": "^1.88.0"
   },
-  "activationEvents": [
-
-  ],
+  "activationEvents": [],
   "contributes": {
     "commands": [
       {
@@ -51,6 +49,9 @@
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint .",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "comment-json": "^4.2.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.12.2",

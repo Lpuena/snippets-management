@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
-import { codeToSnippetFormat, fileRegex, replacePrefixValue, replaceScopeValue, replaceTemplateNameValue } from './fileRegex'
+
+import { assign, parse, stringify } from 'comment-json'
+import { codeToSnippetFormat, fileRegex, replaceBodyValue, replacePrefixValue, replaceScopeValue, replaceTemplateNameValue } from './fileRegex'
+import { BODY, CODE, FILE_CONTENT, SCOPE } from './webViewDetail'
 
 interface Message {
   command: string
@@ -13,16 +16,22 @@ type ReceivedMessage = Message & {
   codeArea: string
 }
 type PostMessage = (message: Message) => void
-let newCode = ''
+
+let coverStatus = false
 export function handleMessage(fileContent: string, message: ReceivedMessage, postMessage: PostMessage) {
   let newFileContent = ''
 
   let newSnippet = ''
+  let beforeFormatContent = ''
+  let formatContent: any = ''
 
   switch (message.command) {
     case 'scopeChanged':
       console.log('Scope changed:', message.scope)
       newFileContent = replaceScopeValue(fileContent, message.scope)
+      // 改变响应式的scope
+      SCOPE.value = message.scope
+
       console.log('New file content:', newFileContent)
       break
 
@@ -38,22 +47,37 @@ export function handleMessage(fileContent: string, message: ReceivedMessage, pos
       break
 
     case 'codeAreaChanged':
-      console.log('newCode1', newCode)
-
       console.log('codeArea changed:', message.codeArea)
-      newCode = message.codeArea
-      console.log('newCode2', newCode)
+      CODE.value = message.codeArea
+      coverStatus = true
+
+      console.log('CODE.value', CODE.value)
       // 实现codeArea变化的相关逻辑
       break
 
     case 'convertBtnClicked':
       console.log('convertBtnClicked')
-      if (!newCode) {
+      if (!coverStatus) {
         console.warn('没有更改,无需转换')
         return fileContent // 无需更新
       }
-      newSnippet = codeToSnippetFormat(newCode)
-      console.log('newSnippet', newSnippet)
+      newSnippet = codeToSnippetFormat(CODE.value)
+      BODY.value = newSnippet
+      console.log('BODY.value', BODY.value)
+      postMessage({
+        command: 'updateBody',
+        content: BODY.value,
+      })
+      beforeFormatContent = replaceBodyValue(fileContent, BODY.value)
+      formatContent = parse(beforeFormatContent)
+      newFileContent = stringify(formatContent, null, 4) // 4: 表示缩进4个空格
+      console.log('New file content:', newFileContent)
+
+      break
+
+    case 'saveBtnClicked':
+      console.log('saveBtnClicked')
+      // TODO 保存文件
       break
 
     default:
@@ -69,5 +93,5 @@ export function handleMessage(fileContent: string, message: ReceivedMessage, pos
     })
   }
 
-  return newFileContent
+  return newFileContent || FILE_CONTENT.value
 }
