@@ -31,7 +31,7 @@ export class WebViewDetail {
 
     const panel = vscode.window.createWebviewPanel(
       'newWebview', // 唯一标识符
-      'New Webview', // 面板标题
+      FILE_NAME.value, // 面板标题
       vscode.ViewColumn.Beside, // 在编辑器的哪个部分打开
       {
         enableScripts: true,
@@ -102,8 +102,21 @@ export class WebViewDetail {
       </head>
       <link href="${styleUri}" rel="stylesheet">
     <body>
-      <h1>File Details for ${fileName}</h1>
-      <h2>Edit Scope and Prefix</h2>
+      <h1>File Details for ${FILE_NAME.value}</h1>
+      <h4>
+       Place your 全局 snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+       description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+       is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+       used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+       $1, $2 for tab stops, $0 for the final cursor position, and \${1:label}\,\${2:another}\ for placeholders. 
+       Placeholders with the same ids are connected.
+      </h4>
+      <h4>
+      将您的全局代码片段放在这里。 每个片段都在片段名称下定义，并具有范围、前缀、正文和描述。 
+      在范围字段中添加代码段适用的语言的逗号分隔 ID。 如果范围留空或省略，则该代码片段将应用于所有语言。
+      前缀用于触发代码片段，正文将被展开和插入。 
+      可能的变量有：$1、$2 表示制表位，$0 表示最终光标位置，\${1:label}\,\${2:another}\ 表示占位符。 具有相同 id 的占位符是相连的。
+      </h4>
       <button id="saveBtn">Save Changes</button>
       <div>
         <div class="input-group">

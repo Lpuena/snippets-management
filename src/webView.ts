@@ -1,8 +1,7 @@
 // webView.ts
 import * as vscode from 'vscode'
-import { readFile, readFileContent } from './readFile'
+import { readFiles } from './readFile'
 import { WebViewDetail } from './webViewDetail'
-import { fileRegex } from './fileRegex'
 
 export class MyWebviewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView
@@ -15,7 +14,7 @@ export class MyWebviewProvider implements vscode.WebviewViewProvider {
   resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView
     webviewView.webview.options = { enableScripts: true }
-    webviewView.webview.html = this.getWebviewContent(readFile())
+    webviewView.webview.html = this.getWebviewContent(readFiles('.code-snippets'))
     webviewView.webview.onDidReceiveMessage((message) => {
       if (message.command === 'fileClicked') {
         // eslint-disable-next-line no-console
@@ -41,10 +40,10 @@ export class MyWebviewProvider implements vscode.WebviewViewProvider {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="${styleUri}" rel="stylesheet">
-        <title>Snippet Management</title>
+        <title>Global Snippets</title>
       </head>
       <body>
-        <h1>Snippet Management!</h1>
+        <h1>Global Snippets</h1>
         <div class="container">
           ${fileList}
         </div>
