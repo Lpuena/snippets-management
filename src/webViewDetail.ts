@@ -12,6 +12,8 @@ export const TEMPLATE_NAME = new ReactiveData<string>('')
 export const BODY = new ReactiveData<string>('')
 export const CODE = new ReactiveData<string>('')
 export const FILE_CONTENT = new ReactiveData<string>('')
+export const FILE_NAME = new ReactiveData<string>('')
+
 FILE_CONTENT.subscribe((value) => {
   console.log('FILE_CONTENT变化了:', value)
 })
@@ -24,6 +26,9 @@ export class WebViewDetail {
   }
 
   private createNewWebviewPanel(fileName: string) {
+    console.log('创建新的Webview面板:', fileName)
+    FILE_NAME.value = fileName
+
     const panel = vscode.window.createWebviewPanel(
       'newWebview', // 唯一标识符
       'New Webview', // 面板标题
