@@ -21,10 +21,11 @@ function getSnippetsDir() {
   return snippetsDir
 }
 
-export function readFile() {
+export function readFiles(fileType: string) {
   const snippetsDir = getSnippetsDir()
   const files = fs.readdirSync(snippetsDir)
-  return files
+  const filteredFiles = files.filter(file => file.endsWith(fileType))
+  return filteredFiles
 }
 
 export function readFileContent(fileName: string) {
