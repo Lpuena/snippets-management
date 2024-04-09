@@ -2,7 +2,8 @@
 
 import { assign, parse, stringify } from 'comment-json'
 import { codeToSnippetFormat, fileRegex, replaceBodyValue, replacePrefixValue, replaceScopeValue, replaceTemplateNameValue } from './fileRegex'
-import { BODY, CODE, FILE_CONTENT, SCOPE } from './webViewDetail'
+import { BODY, CODE, FILE_CONTENT, FILE_NAME, SCOPE } from './webViewDetail'
+import { saveFileContent } from './readFile'
 
 interface Message {
   command: string
@@ -70,14 +71,15 @@ export function handleMessage(fileContent: string, message: ReceivedMessage, pos
       })
       beforeFormatContent = replaceBodyValue(fileContent, BODY.value)
       formatContent = parse(beforeFormatContent)
-      newFileContent = stringify(formatContent, null, 4) // 4: 表示缩进4个空格
+      newFileContent = stringify(formatContent, null, 2) // 2: 表示缩进2个空格
       console.log('New file content:', newFileContent)
 
       break
 
     case 'saveBtnClicked':
       console.log('saveBtnClicked')
-      // TODO 保存文件
+      // saveFile
+      saveFileContent(FILE_NAME.value, FILE_CONTENT.value)
       break
 
     default:
